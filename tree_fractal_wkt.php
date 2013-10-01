@@ -8,6 +8,8 @@
  * By: Erin Hamilton
  * September 30, 2013
 */
+//Change the memory allocated to php
+ini_set('memory_limit','512M');
 
 //must use the geoPHP library
 include_once('geoPHP.inc'); 
@@ -28,7 +30,7 @@ function drawTree($x1, $y1, $angle, $depth){
         $x2 = $x1 + (int)(cos(deg2rad($angle)) * $depth * 10.0);
         $y2 = $y1 + (int)(sin(deg2rad($angle)) * $depth * 10.0);
 		
-		$lineArray[] = 'LINESTRING('.$x1.' '.$y1.','.$x2.' '.$y2.')';
+		$lineArray[] = '('.$x1.' '.$y1.','.$x2.' '.$y2.')';
 		
         drawTree($x2, $y2, $angle - 30, $depth - 1);
         drawTree($x2, $y2, $angle + 30, $depth - 1);
@@ -39,7 +41,7 @@ drawTree($width/2, $height, -90, $depth);
 
 $lines = implode(", ", $lineArray);
 //creates a geometry collection of linestrings
-$tree = geoPHP::load('GEOMETRYCOLLECTION('.$lines.')', 'wkt');
+$tree = geoPHP::load('MULTILINESTRING('.$lines.')', 'wkt');
 //write WKT to a string
 $output = $wkt_writer->write($tree);
 file_put_contents('tree_fractal.csv', $output);
